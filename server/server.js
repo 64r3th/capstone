@@ -2,6 +2,7 @@
 
 const express = require("express");
 const path = require("path");
+const fs = require("fs");
 
 const PORT = process.env.PORT || 3001;
 
@@ -15,6 +16,16 @@ app.get("/api", (req, res) => {
   res.json({ message: "Hello from server!" });
 });
 
+app.get("/api/:data", (req, res) => {
+  fs.readFile(path.resolve(__dirname, `./data/${req.params.data}.json`), "utf8", (err, data) => {
+    if (err) {
+      res.json({ message: `Error reading file -${err}-` });
+      return;
+    }
+    res.json(JSON.parse(data));
+  });
+});
+
 app.listen(PORT, () => {
-  console.log(`Server listening on ${PORT}`);
+  console.log(`Server listening on ${PORT} | http://localhost:${PORT}`);
 });

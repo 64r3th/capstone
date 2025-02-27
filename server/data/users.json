@@ -1,0 +1,19 @@
+{
+  "admins": [
+    {
+      "username": "admin",
+      "password": "admin"
+    }
+  ],
+  "students": [
+    {
+      "student_id": 1,
+      "email": "axeample@example.mail",
+      "first_name": "Axe",
+      "last_name": "Ample",
+      "phone": "123-456-7890",
+      "address": "123 Main St, Anytown, USA",
+      "course_ids": [1,2,3]
+    }
+  ]
+}
