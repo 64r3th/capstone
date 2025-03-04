@@ -1,0 +1,23 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f2abced3;
+  padding: 10px 20px;
+  color: rgba(188, 255, 182, 0.796);
+}
+.logo {
+  margin: 0;
+}
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 15px;
+}
+.nav-links li a {
+  color: rgba(255, 169, 9, 0.911);
+  text-decoration: none;
+}
+.nav-links li a:hover {
+  text-decoration: underline;
+}
