@@ -15,6 +15,10 @@ app.get("/api", (req, res) => {
   res.json({ message: "Hello from server!" });
 });
 
+app.get("/courses", (res, req) => {
+  res.sendfile(path.resolve(__dirname, "../client/dist/index.html"));
+});
+
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
 });
