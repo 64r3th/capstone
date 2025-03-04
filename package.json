@@ -14,6 +14,8 @@
   "author": "",
   "license": "ISC",
   "description": "",
+  "devDependencies": {
+    "morgan": "^1.10.0"
   "dependencies": {
     "express": "^4.21.2",
     "react-router-dom": "^7.2.0"
