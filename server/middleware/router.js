@@ -1,5 +1,6 @@
 const express = require('express');
 const db = require('../db/db');
+const path = require('path')
 
 const router = express.Router();
 
@@ -26,6 +27,10 @@ router.get("/db/:id", async (req, res) => {
 });
 
 //webpages
+router.get('/', (req, res) => {
+  res.send(path.resolve(__dirname, '..', '..', 'client', 'src', 'main.jsx'));
+})
+
 router.get('/register', (req, res) => {
   res.send('register');
 });

@@ -12,15 +12,7 @@ const app = express();
 app.use(morgan("dev"));
 // Have Node serve the files for our built React app
 app.use(express.static(path.resolve(__dirname, "../client/dist")));
-
-// Handle GET requests to /api route
-app.get("/api", (req, res) => {
-  res.json({ message: "Hello from server!" });
-});
-
-app.get("/courses", (res, req) => {
-  res.sendfile(path.resolve(__dirname, "../client/dist/index.html"));
-});
+app.use('/', router);
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT} | http://localhost:${PORT}`);
