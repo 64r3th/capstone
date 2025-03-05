@@ -1,4 +1,4 @@
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 
 const StudentForm = () => {
   const [formData, setFormData] = useState({
@@ -9,20 +9,6 @@ const StudentForm = () => {
     telephone: "",
     address: "",
   });
-              
-  const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    fetch("put link here")
-      .then((res) => res.json())
-      .then((data) => {
-        setFormData(data);
-        setLoading(false);
-      })
-      .catch((error) => console.error("Error fetching data:", error));
-  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,6 +16,39 @@ const StudentForm = () => {
       ...prevState,
       [name]: value,
     }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const isValid = validateForm();
+    if (!isValid) {
+      return;
+    }
+
+    fetch("http://localhost:3001/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((response) => response.json())
+      .then(() => {
+        alert("Registration successful!");
+        setFormData({
+          username: "",
+          email: "",
+          firstName: "",
+          lastName: "",
+          telephone: "",
+          address: "",
+        });
+      })
+      .catch((error) => {
+        console.error("Error during registration:", error);
+        alert("Registration failed. Please try again.");
+      });
   };
 
   const validateForm = () => {
@@ -48,32 +67,8 @@ const StudentForm = () => {
 
     if (!formData.address) newErrors.address = "Address is required";
 
-    setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-
-    fetch("put link here", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setMessage("Registration successful!");
-      })
-      .catch((error) => {
-        console.error("Error updating data:", error);
-        setMessage("Faild to save student details");
-      });
-  };
-
-  if (loading) return <p>Loading student data...</p>;
 
   return (
     <form onSubmit={handleSubmit}>
@@ -84,9 +79,7 @@ const StudentForm = () => {
           name="username"
           value={formData.username}
           onChange={handleChange}
-          required
         />
-        {errors.username && <p style={{ color: "red" }}>{errors.username}</p>}
       </div>
       <div>
         <label>Email:</label>
@@ -95,9 +88,7 @@ const StudentForm = () => {
           name="email"
           value={formData.email}
           onChange={handleChange}
-          required
         />
-        {errors.email && <p style={{ color: "red" }}>{errors.email}</p>}
       </div>
       <div>
         <label>First Name:</label>
@@ -106,9 +97,7 @@ const StudentForm = () => {
           name="firstName"
           value={formData.firstName}
           onChange={handleChange}
-          required
         />
-        {errors.firstName && <p style={{ color: "red" }}>{errors.firstName}</p>}
       </div>
       <div>
         <label>Last Name:</label>
@@ -117,9 +106,7 @@ const StudentForm = () => {
           name="lastName"
           value={formData.lastName}
           onChange={handleChange}
-          required
         />
-        {errors.lastName && <p style={{ color: "red" }}>{errors.lastName}</p>}
       </div>
       <div>
         <label>Telephone:</label>
@@ -128,9 +115,7 @@ const StudentForm = () => {
           name="telephone"
           value={formData.telephone}
           onChange={handleChange}
-          required
         />
-        {errors.telephone && <p style={{ color: "red" }}>{errors.telephone}</p>}
       </div>
       <div>
         <label>Address:</label>
@@ -138,12 +123,9 @@ const StudentForm = () => {
           name="address"
           value={formData.address}
           onChange={handleChange}
-          required
         />
-        {errors.address && <p style={{ color: "red" }}>{errors.address}</p>}
       </div>
-      <button type="submit">Register/Save</button>
-      {message && <p>{message}</p>}
+      <button type="submit">Register</button>
     </form>
   );
 };
