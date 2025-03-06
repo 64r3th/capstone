@@ -1,102 +1,56 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const Login = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
+const Login = ({ setUser }) => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-
-    setLoading(true);
     setError(null);
 
     try {
       const response = await fetch("http://localhost:3001/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        alert("Login successful!");
-      } else {
-        setError(data.message || "Login failed.");
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
       }
-    } catch (error) {
-      console.error("Error during login:", error);
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
+
+      const data = await response.json();
+      setUser(data); 
+      navigate(data.role === "admin" ? "/admin" : "/dashboard");
+    } catch (err) {
+      setError(err.message);
     }
   };
 
   return (
-    <div
-      style={{ padding: "20px", backgroundColor: "lightpink", height: "100vh" }}
-    >
+    <div>
       <h2>Login</h2>
-
-      <form
-        onSubmit={handleSubmit}
-        style={{ width: "300px", margin: "0 auto" }}
-      >
-        <div style={{ marginBottom: "10px" }}>
-          <label>Email:</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            placeholder="Enter your email"
-            style={{ width: "100%", padding: "8px" }}
-          />
-        </div>
-        <div style={{ marginBottom: "10px" }}>
-          <label>Password:</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            placeholder="Enter your password"
-            style={{ width: "100%", padding: "8px" }}
-          />
-        </div>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            width: "100%",
-            padding: "10px",
-            backgroundColor: "#333",
-            color: "#fff",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
-          {loading ? "Logging in..." : "Login"}
-        </button>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      <form onSubmit={handleLogin}>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit">Login</button>
       </form>
     </div>
   );

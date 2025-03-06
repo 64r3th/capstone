@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -6,33 +6,82 @@ import {
   Navigate,
 } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import AdminDashboard from "./components/AdminDashboard";
+import AdminPanel from "./pages/AdminPanel";
 import StudentForm from "./components/StudentForm";
 import CourseList from "./components/CourseList";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import Home from "./pages/Home";
 
 const App = () => {
-  const [role, setRole] = useState("admin");
-  setRole("student");
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const response = await fetch("http://localhost:3001/session", {
+          credentials: "include",
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data);
+        }
+      } catch (err) {
+        console.error("Session check failed", err);
+      }
+    };
+
+    checkSession();
+  }, []);
+
+  const handleLogout = async () => {
+    await fetch("http://localhost:3001/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+    setUser(null);
+  };
 
   return (
     <Router>
-      <Navbar role={role} />
+      <div className="app-container">
+        <Navbar user={user} onLogout={handleLogout} />
 
-      <Routes>
-        <Route path="/" element={<h2>Student Registration App</h2>} />
-
-        <Route
-          path="/register"
-          element={role === "student" ? <StudentForm /> : <Navigate to="/" />}
-        />
-
-        <Route path="/courses" element={<CourseList />} />
-
-        <Route
-          path="/admin"
-          element={role === "admin" ? <AdminDashboard /> : <Navigate to="/" />}
-        />
-      </Routes>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route
+            path="/login"
+            element={
+              user ? <Navigate to="/dashboard" /> : <Login setUser={setUser} />
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={user ? <Dashboard /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/studentForm"
+            element={
+              user?.role === "student" ? (
+                <StudentForm />
+              ) : (
+                <Navigate to="/dashboard" />
+              )
+            }
+          />
+          <Route path="/courses" element={<CourseList />} />
+          <Route
+            path="/admin"
+            element={
+              user?.role === "admin" ? (
+                <AdminPanel />
+              ) : (
+                <Navigate to="/dashboard" />
+              )
+            }
+          />
+        </Routes>
+      </div>
     </Router>
   );
 };

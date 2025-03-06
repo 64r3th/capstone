@@ -4,11 +4,9 @@ import "./Navbar.css";
 
 const Navbar = ({ role }) => {
   return (
-    <nav className="navbar" style={styles.navbar}>
-      <h2 className="logo" style={styles.logo}>
-        Student Registration
-      </h2>
-      <ul className="nav-links" style={styles.navLinks}>
+    <nav className="navbar">
+      <h2 className="logo">Student Registration</h2>
+      <ul className="nav-links">
         <li>
           <Link to="/">Home</Link>
         </li>
