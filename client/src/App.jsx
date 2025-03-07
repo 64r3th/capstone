@@ -67,7 +67,7 @@ const App = () => {
             element={user ? <Dashboard /> : <Navigate to="/login" />}
           />
           <Route
-            path="/studentForm"
+            path="/students"
             element={
               user?.role === "student" ? (
                 <StudentForm />

@@ -1,18 +1,33 @@
-// server/server.js
-
 const express = require("express");
 const morgan = require("morgan");
 const path = require("path");
+const cors = require("cors");
 const router = require("./middleware/router");
+const coursesRouter = require("./routes/courses");
 
 const PORT = process.env.PORT || 3001;
 
 const app = express();
 
 app.use(morgan("dev"));
-// Have Node serve the files for our built React app
 app.use(express.static(path.resolve(__dirname, "../client/dist")));
-app.use('/', router);
+
+const allowedOrigins = ["http://localhost:5173", "http://localhost:5174"];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
+
+app.use("/courses", coursesRouter);
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT} | http://localhost:${PORT}`);
