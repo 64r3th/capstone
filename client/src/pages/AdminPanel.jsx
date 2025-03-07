@@ -1,16 +1,14 @@
 import React, { useState } from "react";
-import StudentForm from "./StudentForm";
+import StudentForm from "../components/StudentForm";
 
 const AdminPanel = () => {
   const [editingStudent, setEditingStudent] = useState(null);
 
   const handleEditStudent = (student) => {
-
     setEditingStudent(student);
   };
 
   const handleDeleteStudent = (student) => {
-  
     console.log("Student deleted:", student);
   };
 

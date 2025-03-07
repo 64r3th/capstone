@@ -15,6 +15,7 @@ import Home from "./pages/Home";
 
 const App = () => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -28,6 +29,8 @@ const App = () => {
         }
       } catch (err) {
         console.error("Session check failed", err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -41,6 +44,10 @@ const App = () => {
     });
     setUser(null);
   };
+
+  if (loading) {
+    return <h2>Loading...</h2>;
+  }
 
   return (
     <Router>
