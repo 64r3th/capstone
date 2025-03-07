@@ -3,7 +3,6 @@ const morgan = require("morgan");
 const path = require("path");
 const cors = require("cors");
 const router = require("./middleware/router");
-const coursesRouter = require("./routes/courses");
 
 const PORT = process.env.PORT || 3001;
 
@@ -27,7 +26,7 @@ app.use(
   })
 );
 
-app.use("/courses", coursesRouter);
+app.use('/', router);
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT} | http://localhost:${PORT}`);
