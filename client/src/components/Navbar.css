@@ -2,22 +2,31 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f2abced3;
-  padding: 10px 20px;
-  color: rgba(188, 255, 182, 0.796);
+  background: #1a1a1a;
+  padding: 15px 25px;
+  color: #ff79c6;
 }
+
 .logo {
   margin: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
 }
+
 .nav-links {
   list-style: none;
   display: flex;
-  gap: 15px;
+  gap: 20px;
 }
+
 .nav-links li a {
-  color: rgba(255, 169, 9, 0.911);
+  color: #ff9edb;
   text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease-in-out;
 }
+
 .nav-links li a:hover {
+  color: #ff4fa1;
   text-decoration: underline;
 }
