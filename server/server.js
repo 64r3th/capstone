@@ -9,6 +9,7 @@ const PORT = process.env.PORT || 3001;
 const app = express();
 
 app.use(morgan("dev"));
+app.use(express.json());
 app.use(express.static(path.resolve(__dirname, "../client/dist")));
 
 const allowedOrigins = ["http://localhost:5173", "http://localhost:5174"];
