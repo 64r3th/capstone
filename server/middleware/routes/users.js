@@ -1,19 +1,21 @@
-const express = require("express");
+const express = require('express');
+const bcrypt = require('bcrypt')
 const database = "users";
 const db = require('../db/db')
 const router = express.Router();
 
-router.post('/postData', async (request, response) => {
-  const { user_id, user_name, password_hash, email, first_name, last_name, phone, address, is_admin } = request.body;
-  if (!user_id || !user_name || !password_hash || !email || !first_name || !last_name || !phone || !address || (is_admin === undefined)) {
-    return response.status(400).send('Missing required fields: user_id, user_name, password_hash, email, first_name, last_name, phone, address, or is_admin');
+router.post('/addUser', async (request, response) => {
+  const {user_name, password, email, first_name, last_name, phone, address, is_admin } = request.body;
+  if (!user_name || !password) {
+    return response.status(400).send('Missing required fields: user_name, or password');
   }   // validate body
   request.setTimeout(10000, () => {
     response.status(504).send('Request timeout');
   }); // 10 second timeout
-  const insert_query = `INSERT INTO ${database} (user_id, user_name, password_hash, email, first_name, last_name, phone, address, is_admin) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`;
+  const insert_query = `INSERT INTO ${database} (user_id, user_name, password_hash, email, first_name, last_name, phone, address, is_admin) VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8)`;
   try {
-    const result = await db.query({ text: insert_query, values: [user_id, user_name, password_hash, email, first_name, last_name, phone, address, is_admin], timeout: 5000 });
+    const password_hash = await bcrypt.hash(password, 10);
+    const result = await db.query({ text: insert_query, values: [user_name, password_hash, email, first_name, last_name, phone, address, is_admin || false], timeout: 5000 });
     response.status(201).send('Data posted successfully');
   } catch (err) {
     console.error('Database error:', err);
@@ -24,13 +26,14 @@ router.post('/postData', async (request, response) => {
   }
 });
 
-router.get('/fetchData', async (request, response) => {
+router.get('/getUsers', async (request, response) => {
   request.setTimeout(10000, () => {
     response.status(504).send('Request timeout');
   }); //10 second timeout
   const fetch_query = `SELECT * FROM ${database}`;
   try {
     const result = await db.query({ text: fetch_query, timeout: 5000 });
+    console.log(result);
     if (result.rows.length > 0) {
       response.send(result.rows);
     } else {
@@ -42,7 +45,7 @@ router.get('/fetchData', async (request, response) => {
   }
 });
 
-router.get('/fetchbyID/:user_id', async (request, response) => {
+router.get('/getUserByID/:user_id', async (request, response) => {
   const { user_id } = request.params;
   request.setTimeout(10000, () => {
     response.status(504).send('Request timeout');
@@ -61,7 +64,7 @@ router.get('/fetchbyID/:user_id', async (request, response) => {
   }
 });
 
-router.put('/update/:user_id', async (request, response) => {
+router.put('/updateUser/:user_id', async (request, response) => {
   const { user_id } = request.params;
   const { user_name, password_hash, email, first_name, last_name, phone, address, is_admin } = request.body;
   if (!user_id || !user_name || !password_hash || !email || !first_name || !last_name || !phone || ! address || (is_admin === undefined)) {
@@ -84,7 +87,7 @@ router.put('/update/:user_id', async (request, response) => {
   }
 });
 
-router.delete('/delete/:user_id', async (req, res) => {
+router.delete('/deleteUser/:user_id', async (req, res) => {
   const { user_id } = req.params;
   if (!user_id) {
     return res.status(400).send('Missing required parameter: user_id');

@@ -4,16 +4,16 @@ const database = "courses"
 const router = express.Router();
 
 router.post('/postData', async (request, response) => {
-  const { course_id, course_name } = request.body;
-  if (!course_id || !course_name) {
-    return response.status(400).send('Missing required fields: course_id and course_name');
+  const { course_name } = request.body;
+  if (!course_name) {
+    return response.status(400).send('Missing required fields: course_name');
   }   // validate body
   request.setTimeout(10000, () => {
     response.status(504).send('Request timeout');
   }); // 10 second timeout
-  const insert_query = `INSERT INTO ${database} (course_id, course_name) VALUES ($1, $2)`;
+  const insert_query = `INSERT INTO ${database} (course_id, course_name) VALUES (DEFUALT, $1)`;
   try {
-    const result = await db.query({ text: insert_query, values: [course_id, course_name], timeout: 5000 });
+    const result = await db.query({ text: insert_query, values: [course_name], timeout: 5000 });
     response.status(201).send('Data posted successfully');
   } catch (err) {
     console.error('Database error:', err);
