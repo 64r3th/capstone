@@ -5,7 +5,7 @@ const db = require('../db/db');
 const authenticateToken = require('./auth').authenticateToken;
 const router = express.Router();
 
-router.post('/addUser', async (request, response) => {
+router.post('/post', async (request, response) => {
   const {user_name, password, email, first_name, last_name, phone, address, is_admin } = request.body;
   if (!user_name || !password) {
     return response.status(400).send('Missing required fields: user_name, or password');
@@ -27,7 +27,7 @@ router.post('/addUser', async (request, response) => {
   }
 });
 
-router.get('/getUsers', async (request, response) => {
+router.get('/get', async (request, response) => {
   if (!request.user.is_admin) return response.sendStatus(403)
   request.setTimeout(10000, () => {
     response.status(504).send('Request timeout');
@@ -47,7 +47,7 @@ router.get('/getUsers', async (request, response) => {
   }
 });
 
-router.get('/getUserByID/:user_id', authenticateToken, async (request, response) => {
+router.get('/getbyID/:user_id', authenticateToken, async (request, response) => {
   //authenticate
   if (!request.user.is_admin || !request.user.user_id === request.params.user_id) return response.sendStatus(403)
   const { user_id } = request.params;
@@ -68,7 +68,7 @@ router.get('/getUserByID/:user_id', authenticateToken, async (request, response)
   }
 });
 
-router.put('/updateUser/:user_id', authenticateToken, async (request, response) => {
+router.put('/update/:user_id', authenticateToken, async (request, response) => {
   //authenticate
   if (!request.user.is_admin || !request.user.user_id === request.params.user_id) return response.sendStatus(403)
   const { user_id } = request.params;
@@ -93,7 +93,7 @@ router.put('/updateUser/:user_id', authenticateToken, async (request, response) 
   }
 });
 
-router.delete('/deleteUser/:user_id', authenticateToken, async (req, res) => {
+router.delete('/delete/:user_id', authenticateToken, async (req, res) => {
   //authenticate
   if (!request.user.is_admin || !request.user.user_id === request.params.user_id) return response.sendStatus(403)
   const { user_id } = req.params;
