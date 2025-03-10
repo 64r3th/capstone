@@ -4,6 +4,8 @@ const path = require("path");
 const cors = require("cors");
 const router = require("./middleware/router");
 
+const authenticateToken = require('./middleware/routes/auth').authenticateToken;
+
 const PORT = process.env.PORT || 3001;
 
 const app = express();

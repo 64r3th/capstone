@@ -1,7 +1,8 @@
 const express = require('express');
 const bcrypt = require('bcrypt')
 const database = "users";
-const db = require('../db/db')
+const db = require('../db/db');
+const authenticateToken = require('./auth').authenticateToken;
 const router = express.Router();
 
 router.post('/addUser', async (request, response) => {
@@ -27,6 +28,7 @@ router.post('/addUser', async (request, response) => {
 });
 
 router.get('/getUsers', async (request, response) => {
+  if (!request.user.is_admin) return response.sendStatus(403)
   request.setTimeout(10000, () => {
     response.status(504).send('Request timeout');
   }); //10 second timeout
@@ -45,7 +47,9 @@ router.get('/getUsers', async (request, response) => {
   }
 });
 
-router.get('/getUserByID/:user_id', async (request, response) => {
+router.get('/getUserByID/:user_id', authenticateToken, async (request, response) => {
+  //authenticate
+  if (!request.user.is_admin || !request.user.user_id === request.params.user_id) return response.sendStatus(403)
   const { user_id } = request.params;
   request.setTimeout(10000, () => {
     response.status(504).send('Request timeout');
@@ -64,7 +68,9 @@ router.get('/getUserByID/:user_id', async (request, response) => {
   }
 });
 
-router.put('/updateUser/:user_id', async (request, response) => {
+router.put('/updateUser/:user_id', authenticateToken, async (request, response) => {
+  //authenticate
+  if (!request.user.is_admin || !request.user.user_id === request.params.user_id) return response.sendStatus(403)
   const { user_id } = request.params;
   const { user_name, password_hash, email, first_name, last_name, phone, address, is_admin } = request.body;
   if (!user_id || !user_name || !password_hash || !email || !first_name || !last_name || !phone || ! address || (is_admin === undefined)) {
@@ -87,7 +93,9 @@ router.put('/updateUser/:user_id', async (request, response) => {
   }
 });
 
-router.delete('/deleteUser/:user_id', async (req, res) => {
+router.delete('/deleteUser/:user_id', authenticateToken, async (req, res) => {
+  //authenticate
+  if (!request.user.is_admin || !request.user.user_id === request.params.user_id) return response.sendStatus(403)
   const { user_id } = req.params;
   if (!user_id) {
     return res.status(400).send('Missing required parameter: user_id');

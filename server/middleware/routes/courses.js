@@ -1,9 +1,11 @@
 const express = require("express");
 const db = require('../db/db');
+const authenticateToken = require('./auth').authenticateToken;
 const database = "courses"
 const router = express.Router();
 
-router.post('/postData', async (request, response) => {
+router.post('/post', authenticateToken, async (request, response) => {
+  if (!request.user.is_admin) return response.sendStatus(403)
   const { course_name } = request.body;
   if (!course_name) {
     return response.status(400).send('Missing required fields: course_name');
@@ -11,7 +13,7 @@ router.post('/postData', async (request, response) => {
   request.setTimeout(10000, () => {
     response.status(504).send('Request timeout');
   }); // 10 second timeout
-  const insert_query = `INSERT INTO ${database} (course_id, course_name) VALUES (DEFUALT, $1)`;
+  const insert_query = `INSERT INTO ${database} (course_id, course_name) VALUES (DEFAULT, $1)`;
   try {
     const result = await db.query({ text: insert_query, values: [course_name], timeout: 5000 });
     response.status(201).send('Data posted successfully');
@@ -24,7 +26,7 @@ router.post('/postData', async (request, response) => {
   }
 });
 
-router.get('/fetchData', async (request, response) => {
+router.get('/get', async (request, response) => {
   request.setTimeout(10000, () => {
     response.status(504).send('Request timeout');
   }); //10 second timeout
@@ -42,7 +44,7 @@ router.get('/fetchData', async (request, response) => {
   }
 });
 
-router.get('/fetchbyID/:course_id', async (request, response) => {
+router.get('/getbyID/:course_id', async (request, response) => {
   const { course_id } = request.params;
   request.setTimeout(10000, () => {
     response.status(504).send('Request timeout');
@@ -61,7 +63,9 @@ router.get('/fetchbyID/:course_id', async (request, response) => {
   }
 });
 
-router.put('/update/:course_id', async (request, response) => {
+router.put('/update/:course_id', authenticateToken, async (request, response) => {
+  //authenticate
+  if (!request.user.is_admin) return response.sendStatus(403);
   const { course_id } = request.params;
   const { course_name } = request.body;
   if (!course_id || !course_name) {
@@ -84,7 +88,9 @@ router.put('/update/:course_id', async (request, response) => {
   }
 });
 
-router.delete('/delete/:course_id', async (req, res) => {
+router.delete('/delete/:course_id', authenticateToken, async (req, res) => {
+  //authenticate
+  if (!request.user.is_admin) return response.sendStatus(403);
   const { course_id } = req.params;
   if (!course_id) {
     return res.status(400).send('Missing required parameter: course_id');
