@@ -1,41 +1,36 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import "./Navbar.css";
 
-const Navbar = ({ role }) => {
+const Navbar = ({ user, onLogout }) => {
   return (
     <nav className="navbar">
-      <h2 className="logo">Student Registration</h2>
+      <h1 className="logo">Student Registration</h1>
       <ul className="nav-links">
         <li>
           <Link to="/">Home</Link>
         </li>
-        {role === "student" && (
+        {user ? (
           <>
             <li>
-              <Link to="/register">Register</Link>
-            </li>
-            <li>
-              <Link to="/manage">Mange Details</Link>
+              <Link to={user.role === "admin" ? "/admin" : "/dashboard"}>
+                Dashboard
+              </Link>
             </li>
             <li>
               <Link to="/courses">Courses</Link>
             </li>
-          </>
-        )}
-        {role === "admin" && (
-          <>
+            <li className="user-info">Welcome, {user.username}!</li>
             <li>
-              <Link to="/admin">Admin Dashboard</Link>
+              <button onClick={onLogout} className="logout-btn">
+                Logout
+              </button>
             </li>
           </>
+        ) : (
+          <li>
+            <Link to="/login">Login</Link>
+          </li>
         )}
-        <li>
-          <Link to="/students">Students</Link>
-        </li>
-        <li>
-          <Link to="/courses">Courses</Link>
-        </li>
       </ul>
     </nav>
   );

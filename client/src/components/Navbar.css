@@ -30,3 +30,22 @@
   color: #ff4fa1;
   text-decoration: underline;
 }
+.user-info {
+  font-weight: bold;
+  color: #ff80bf;
+  margin-right: 10px;
+}
+
+.logout-btn {
+  background-color: #ff4d94;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: #e60073;
+}
