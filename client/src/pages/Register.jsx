@@ -6,11 +6,28 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
   const navigate = useNavigate();
+
+  const validateEmail = (email) => /\S+@\S+\.\S+/.test(email);
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setError(null);
+    setSuccess(null);
+
+    if (username.length < 3) {
+      setError("Username must be at least 3 characters.");
+      return;
+    }
+    if (!validateEmail(email)) {
+      setError("Enter a valid email address.");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
 
     try {
       const response = await fetch("http://localhost:3001/register", {
@@ -20,10 +37,12 @@ const Register = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to register. Try again.");
+        const errorMsg = await response.text();
+        throw new Error(errorMsg || "Registration failed.");
       }
 
-      navigate("/login");
+      setSuccess("Account created successfully! Redirecting...");
+      setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
       setError(err.message);
     }
@@ -33,6 +52,7 @@ const Register = () => {
     <div>
       <h2>Register</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
+      {success && <p style={{ color: "green" }}>{success}</p>}
       <form onSubmit={handleRegister}>
         <input
           type="text"

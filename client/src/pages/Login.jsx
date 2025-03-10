@@ -19,11 +19,11 @@ const Login = ({ setUser }) => {
         body: JSON.stringify({ username, password }),
       });
 
+      const data = await response.json();
       if (!response.ok) {
-        throw new Error("Invalid credentials");
+        throw new Error(data.message || "Invalid login attempt");
       }
 
-      const data = await response.json();
       setUser(data);
       navigate(data.role === "admin" ? "/admin" : "/dashboard");
     } catch (err) {

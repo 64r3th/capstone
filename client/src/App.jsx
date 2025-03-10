@@ -10,7 +10,7 @@ import AdminPanel from "./pages/AdminPanel";
 import StudentForm from "./components/StudentForm";
 import CourseList from "./components/CourseList";
 import Login from "./pages/Login";
-import Register from "./pages/Register"; // NEW IMPORT
+import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
 import "./App.css";
@@ -21,25 +21,30 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const response = await fetch("http://localhost:3001/session", {
-          credentials: "include",
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data);
-        }
-      } catch (err) {
-        console.error("Session check failed", err);
-      } finally {
-        setLoading(false);
+  const checkSession = async () => {
+    try {
+      const response = await fetch("http://localhost:3001/session", {
+        credentials: "include",
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data);
       }
-    };
+    } catch (err) {
+      console.error("Session check failed", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     checkSession();
   }, []);
+
+  const handleLoginSuccess = (userData) => {
+    setUser(userData);
+    checkSession();
+  };
 
   const handleLogout = async () => {
     await fetch("http://localhost:3001/logout", {
@@ -63,7 +68,11 @@ const App = () => {
           <Route
             path="/login"
             element={
-              user ? <Navigate to="/dashboard" /> : <Login setUser={setUser} />
+              user ? (
+                <Navigate to="/dashboard" />
+              ) : (
+                <Login setUser={handleLoginSuccess} />
+              )
             }
           />
           <Route
