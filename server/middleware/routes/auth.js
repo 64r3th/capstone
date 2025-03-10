@@ -14,10 +14,9 @@ router.post('/', async (request, response) => {
   const findUser = users.rows.find(user => user.user_name === user_name);
   if (findUser === null) return response.sendStatus(400);
   try {
-    console.log(password);
     if (await bcrypt.compare(password, findUser.password_hash)) {
       //JWT
-      const user = {user_name, is_admin: findUser.is_admin};
+      const user = {user_id: findUser.user_id, user_name, is_admin: findUser.is_admin};
       const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
       response.json({accessToken});
     } else {
