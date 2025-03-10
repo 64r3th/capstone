@@ -14,7 +14,7 @@ import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
 import "./App.css";
 import "./components/Navbar.css";
-import "./pages/index.css";
+import "./index.css";
 
 const App = () => {
   const [user, setUser] = useState(null);
