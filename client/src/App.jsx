@@ -10,6 +10,7 @@ import AdminPanel from "./pages/AdminPanel";
 import StudentForm from "./components/StudentForm";
 import CourseList from "./components/CourseList";
 import Login from "./pages/Login";
+import Register from "./pages/Register"; // NEW IMPORT
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
 import "./App.css";
@@ -64,6 +65,10 @@ const App = () => {
             element={
               user ? <Navigate to="/dashboard" /> : <Login setUser={setUser} />
             }
+          />
+          <Route
+            path="/register"
+            element={user ? <Navigate to="/dashboard" /> : <Register />}
           />
           <Route
             path="/dashboard"
