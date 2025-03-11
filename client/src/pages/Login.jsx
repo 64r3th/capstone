@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = ({ setUser }) => {
-  const [username, setUsername] = useState("");
+  const [user_name, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -16,13 +16,15 @@ const Login = ({ setUser }) => {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ user_name, password }),
       });
 
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.message || "Invalid login attempt");
       }
+
+      localStorage.setItem("accessToken", data.accessToken);
 
       setUser(data);
       navigate(data.role === "admin" ? "/admin" : "/dashboard");
@@ -39,7 +41,7 @@ const Login = ({ setUser }) => {
         <input
           type="text"
           placeholder="Username"
-          value={username}
+          value={user_name}
           onChange={(e) => setUsername(e.target.value)}
           required
         />
@@ -52,7 +54,7 @@ const Login = ({ setUser }) => {
         />
         <button type="submit">Login</button>
       </form>
-      <p>Don't have an account?</p>
+      <p>No account found!</p>
       <button onClick={() => navigate("/register")}>Register</button>
     </div>
   );

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -11,7 +11,7 @@ import StudentForm from "./components/StudentForm";
 import CourseList from "./components/CourseList";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./pages/AdminDashboard";
 import Home from "./pages/Home";
 import "./App.css";
 import "./components/Navbar.css";
@@ -19,31 +19,10 @@ import "./index.css";
 
 const App = () => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  const checkSession = async () => {
-    try {
-      const response = await fetch("http://localhost:3001/session", {
-        credentials: "include",
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data);
-      }
-    } catch (err) {
-      console.error("Session check failed", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    checkSession();
-  }, []);
+  const [loading] = useState(false);
 
   const handleLoginSuccess = (userData) => {
     setUser(userData);
-    checkSession();
   };
 
   const handleLogout = async () => {
@@ -76,7 +55,7 @@ const App = () => {
             }
           />
           <Route
-            path="/users/post"
+            path="/register"
             element={user ? <Navigate to="/dashboard" /> : <Register />}
           />
           <Route
@@ -89,18 +68,18 @@ const App = () => {
               user?.role === "student" ? (
                 <StudentForm />
               ) : (
-                <Navigate to="/dashboard" />
+                <Navigate to="/StudentForm" />
               )
             }
           />
-          <Route path="/courses/get" element={<CourseList />} />
+          <Route path="/courses" element={<CourseList />} />
           <Route
             path="/admin"
             element={
               user?.role === "admin" ? (
                 <AdminPanel />
               ) : (
-                <Navigate to="/dashboard" />
+                <Navigate to="/AdminPanel" />
               )
             }
           />

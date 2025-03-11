@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Register = () => {
-  const [username, setUsername] = useState("");
+  const [user_name, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -16,7 +16,7 @@ const Register = () => {
     setError(null);
     setSuccess(null);
 
-    if (username.length < 3) {
+    if (user_name.length < 3) {
       setError("Username must be at least 3 characters.");
       return;
     }
@@ -30,10 +30,10 @@ const Register = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3001/register", {
+      const response = await fetch("http://localhost:3001/users/post", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ user_name, email, password }),
       });
 
       if (!response.ok) {
@@ -57,7 +57,7 @@ const Register = () => {
         <input
           type="text"
           placeholder="Username"
-          value={username}
+          value={user_name}
           onChange={(e) => setUsername(e.target.value)}
           required
         />
