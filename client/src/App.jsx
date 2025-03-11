@@ -76,11 +76,11 @@ const App = () => {
             }
           />
           <Route
-            path="/register"
+            path="/users/post"
             element={user ? <Navigate to="/dashboard" /> : <Register />}
           />
           <Route
-            path="/dashboard"
+            path="/login"
             element={user ? <Dashboard /> : <Navigate to="/login" />}
           />
           <Route
@@ -93,7 +93,7 @@ const App = () => {
               )
             }
           />
-          <Route path="/courses" element={<CourseList />} />
+          <Route path="/courses/get" element={<CourseList />} />
           <Route
             path="/admin"
             element={
