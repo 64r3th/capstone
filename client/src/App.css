@@ -64,7 +64,7 @@ button:hover {
   filter: drop-shadow(0 0 2em var(--accent-color));
 }
 .login-container {
-  background: rgba(20, 20, 20, 0.9);
+  background: rgba(20, 20, 20, 20);
   color: white;
   padding: 2rem;
   border-radius: 10px;

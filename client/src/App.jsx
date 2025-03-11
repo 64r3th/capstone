@@ -93,7 +93,7 @@ const App = () => {
               )
             }
           />
-          <Route path="/courses/get" element={<CourseList />} />
+          <Route path="/courses" element={<CourseList />} />
           <Route
             path="/admin"
             element={
