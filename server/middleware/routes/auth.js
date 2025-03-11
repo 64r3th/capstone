@@ -16,9 +16,10 @@ router.post('/', async (request, response) => {
   try {
     if (await bcrypt.compare(password, findUser.password_hash)) {
       //JWT
-      const user = {user_id: findUser.user_id, user_name, is_admin: findUser.is_admin};
+      const { user_id, is_admin } = findUser
+      const user = {user_id, user_name, is_admin};
       const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
-      response.json({accessToken});
+      response.json({ accessToken, user_id, user_name, is_admin });
     } else {
       response.send('Not allowed');
     }
