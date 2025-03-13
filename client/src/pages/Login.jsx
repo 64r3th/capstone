@@ -24,10 +24,9 @@ const Login = ({ setUser }) => {
         throw new Error(data.message || "Invalid login attempt");
       }
 
-      localStorage.setItem("accessToken", data.accessToken);
-
-      setUser(data);
-      navigate(data.role === "admin" ? "/admin" : "/dashboard");
+      localStorage.setItem("token", data.accessToken);
+      setUser(data.user);
+      navigate(data.user.role === "admin" ? "/AdminDashboard" : "/StudentForm");
     } catch (err) {
       setError(err.message);
     }

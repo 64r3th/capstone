@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -10,32 +10,42 @@ import AdminPanel from "./pages/AdminPanel";
 import StudentForm from "./components/StudentForm";
 import CourseList from "./components/CourseList";
 import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Dashboard from "./pages/AdminDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 import Home from "./pages/Home";
 import "./App.css";
-import "./components/Navbar.css";
-import "./index.css";
 
 const App = () => {
   const [user, setUser] = useState(null);
-  const [loading] = useState(false);
 
-  const handleLoginSuccess = (userData) => {
-    setUser(userData);
-  };
+  useEffect(() => {
+    const fetchUser = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
 
-  const handleLogout = async () => {
-    await fetch("http://localhost:3001/logout", {
-      method: "POST",
-      credentials: "include",
-    });
+      try {
+        const response = await fetch("http://localhost:3001/login", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.user);
+        } else {
+          localStorage.removeItem("token");
+        }
+      } catch (error) {
+        console.error("login validation failed", error);
+        localStorage.removeItem("token");
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
     setUser(null);
   };
-
-  if (loading) {
-    return <h2>Loading...</h2>;
-  }
 
   return (
     <Router>
@@ -43,46 +53,31 @@ const App = () => {
         <Navbar user={user} onLogout={handleLogout} />
 
         <Routes>
-          <Route path="/" element={<Home />} />
           <Route
             path="/login"
-            element={
-              user ? (
-                <Navigate to="/dashboard" />
-              ) : (
-                <Login setUser={handleLoginSuccess} />
-              )
-            }
+            element={user ? <Navigate to="/" /> : <Login setUser={setUser} />}
           />
           <Route
-            path="/register"
-            element={user ? <Navigate to="/dashboard" /> : <Register />}
-          />
-          <Route
-            path="/login"
-            element={user ? <Dashboard /> : <Navigate to="/login" />}
-          />
-          <Route
-            path="/students"
-            element={
-              user?.role === "student" ? (
-                <StudentForm />
-              ) : (
-                <Navigate to="/StudentForm" />
-              )
-            }
+            path="/"
+            element={user ? <Home /> : <Navigate to="/login" />}
           />
           <Route path="/courses" element={<CourseList />} />
-          <Route
-            path="/admin"
-            element={
-              user?.role === "admin" ? (
-                <AdminPanel />
-              ) : (
-                <Navigate to="/AdminPanel" />
-              )
-            }
-          />
+
+          {user?.role === "student" && (
+            <Route path="/students" element={<StudentForm />} />
+          )}
+          {user?.role === "admin" && (
+            <Route
+              path="/AdminDashboard"
+              element={
+                user?.role === "admin" ? (
+                  <Dashboard />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
+          )}
         </Routes>
       </div>
     </Router>
