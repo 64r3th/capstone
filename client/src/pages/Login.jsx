@@ -25,8 +25,22 @@ const Login = ({ setUser }) => {
       }
 
       localStorage.setItem("token", data.accessToken);
-      setUser(data.user);
-      navigate(data.user.role === "admin" ? "/AdminDashboard" : "/StudentForm");
+
+      const userResponse = await fetch("http://localhost:3001/me", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${data.accessToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const userData = await userResponse.json();
+      if (!userResponse.ok || !userData.role) {
+        throw new Error("Failed to retrieve user details.");
+      }
+
+      setUser(userData);
+      navigate(userData.role === "admin" ? "/admin" : "/students");
     } catch (err) {
       setError(err.message);
     }

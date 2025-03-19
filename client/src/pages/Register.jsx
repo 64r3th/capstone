@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Register = () => {
-  const [user_name, setUsername] = useState("");
+  const [user_name, setUser_name] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -33,7 +33,7 @@ const Register = () => {
       const response = await fetch("http://localhost:3001/users/post", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_name, email, password }),
+        body: JSON.stringify({ user_name, password, email }),
       });
 
       if (!response.ok) {
@@ -58,7 +58,7 @@ const Register = () => {
           type="text"
           placeholder="Username"
           value={user_name}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={(e) => setUser_name(e.target.value)}
           required
         />
         <input

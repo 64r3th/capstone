@@ -9,10 +9,12 @@ import Navbar from "./components/Navbar";
 import AdminPanel from "./pages/AdminPanel";
 import StudentForm from "./components/StudentForm";
 import CourseList from "./components/CourseList";
-import Login from "./pages/Login";
-import AdminDashboard from "./pages/AdminDashboard";
 import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import "./App.css";
+import "./components/Navbar.css";
+import "./index.css";
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -23,18 +25,17 @@ const App = () => {
       if (!token) return;
 
       try {
-        const response = await fetch("http://localhost:3001/login", {
+        const response = await fetch("http://localhost:3001/me", {
+          method: "GET",
+          credentials: "include",
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data.user);
-        } else {
-          localStorage.removeItem("token");
-        }
+        if (!response.ok) throw new Error("Session expired");
+        const data = await response.json();
+        setUser(data.user);
       } catch (error) {
-        console.error("login validation failed", error);
+        console.error("Error fetching user:", error);
         localStorage.removeItem("token");
       }
     };
@@ -58,6 +59,10 @@ const App = () => {
             element={user ? <Navigate to="/" /> : <Login setUser={setUser} />}
           />
           <Route
+            path="/register"
+            element={user ? <Navigate to="/" /> : <Register />}
+          />
+          <Route
             path="/"
             element={user ? <Home /> : <Navigate to="/login" />}
           />
@@ -67,21 +72,11 @@ const App = () => {
             <Route path="/students" element={<StudentForm />} />
           )}
           {user?.role === "admin" && (
-            <Route
-              path="/AdminDashboard"
-              element={
-                user?.role === "admin" ? (
-                  <Dashboard />
-                ) : (
-                  <Navigate to="/login" />
-                )
-              }
-            />
+            <Route path="/admin" element={<AdminPanel />} />
           )}
         </Routes>
       </div>
     </Router>
   );
 };
-
 export default App;
