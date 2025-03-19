@@ -88,28 +88,28 @@ router.put('/update/:course_id', authenticateToken, async (request, response) =>
   }
 });
 
-router.delete('/delete/:course_id', authenticateToken, async (req, res) => {
+router.delete('/delete/:course_id', authenticateToken, async (request, response) => {
   //authenticate
-  if (!request.user.is_admin) return response.sendStatus(403);
-  const { course_id } = req.params;
+  if (!request.body.user.is_admin) return response.sendStatus(403);
+  const { course_id } = request.params;
   if (!course_id) {
-    return res.status(400).send('Missing required parameter: course_id');
+    return response.status(400).send('Missing required parameter: course_id');
   }   // Validate request
 
-  req.setTimeout(10000, () => {
-    res.status(504).send('Request timeout');
+  request.setTimeout(10000, () => {
+    response.status(504).send('Request timeout');
   }); // 10 second timeout
   const delete_query = `DELETE FROM ${database} WHERE course_id = $1`;
   try {
     const result = await db.query({ text: delete_query, values: [course_id], timeout: 5000 });
     if (result.rowCount > 0) {
-      res.status(200).send('Course deleted successfully');
+      response.status(200).send('Course deleted successfully');
     } else {
-      res.status(404).send('Not found');
+      response.status(404).send('Not found');
     }
   } catch (error) {
     console.error('Database error:', error);
-    res.status(500).send('Database query failed');
+    response.status(500).send('Database query failed');
   }
 });
 

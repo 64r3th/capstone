@@ -27,8 +27,8 @@ router.post('/post', async (request, response) => {
   }
 });
 
-router.get('/get', async (request, response) => {
-  if (!request.user.is_admin) return response.sendStatus(403)
+router.get('/get', authenticateToken, async (request, response) => {
+  if (!request.body.user.is_admin) return response.sendStatus(403)
   request.setTimeout(10000, () => {
     response.status(504).send('Request timeout');
   }); //10 second timeout
@@ -49,7 +49,7 @@ router.get('/get', async (request, response) => {
 
 router.get('/getbyID/:user_id', authenticateToken, async (request, response) => {
   //authenticate
-  if (!request.user.is_admin || !request.user.user_id === request.params.user_id) return response.sendStatus(403)
+  if (!request.body.user.is_admin || !request.body.user.user_id === request.params.user_id) return response.sendStatus(403)
   const { user_id } = request.params;
   request.setTimeout(10000, () => {
     response.status(504).send('Request timeout');
@@ -72,10 +72,8 @@ router.put('/update/:user_id', authenticateToken, async (request, response) => {
   //authenticate
   if (!request.user.is_admin || !request.user.user_id === request.params.user_id) return response.sendStatus(403)
   const { user_id } = request.params;
-  const { user_name, password_hash, email, first_name, last_name, phone, address, is_admin } = request.body;
-  if (!user_id || !user_name || !password_hash || !email || !first_name || !last_name || !phone || ! address || (is_admin === undefined)) {
-    return response.status(400).send('Missing required fields: user_id, user_name, password_hash, email, first_name, last_name, phone, address, or is_admin');
-  }   // validate body
+  const { user_name, password_hash, email, first_name, last_name, phone, address, is_admin } = request.body || await db.query({text: `SELECT * FROM ${database} WHERE user_id = $1`, values:[user_id], timeout: 5000}).rows;
+  // validate body
   request.setTimeout(10000, () => {
     response.status(504).send('Request timeout');
   }); // 10 second timeout
@@ -93,27 +91,27 @@ router.put('/update/:user_id', authenticateToken, async (request, response) => {
   }
 });
 
-router.delete('/delete/:user_id', authenticateToken, async (req, res) => {
+router.delete('/delete/:user_id', authenticateToken, async (request, response) => {
   //authenticate
   if (!request.user.is_admin || !request.user.user_id === request.params.user_id) return response.sendStatus(403)
-  const { user_id } = req.params;
+  const { user_id } = request.params;
   if (!user_id) {
-    return res.status(400).send('Missing required parameter: user_id');
+    return response.status(400).send('Missing required parameter: user_id');
   }   // Validate request
-  req.setTimeout(10000, () => {
-    res.status(504).send('Request timeout');
+  request.setTimeout(10000, () => {
+    response.status(504).send('Request timeout');
   }); // 10 second timeout
   const delete_query = `DELETE FROM ${database} WHERE user_id = $1`;
   try {
     const result = await db.query({ text: delete_query, values: [user_id], timeout: 5000 });
     if (result.rowCount > 0) {
-      res.status(200).send('User deleted successfully');
+      response.status(200).send('User deleted successfully');
     } else {
-      res.status(404).send('Not found');
+      response.status(404).send('Not found');
     }
   } catch (error) {
     console.error('Database error:', error);
-    res.status(500).send('Database query failed');
+    response.status(500).send('Database query failed');
   }
 });
 
